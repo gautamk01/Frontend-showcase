@@ -22,61 +22,58 @@ const config = {
 //Max - 8 in 4
 const spotlightItems = [
   {
-    name: "Silent Arc",
-    img: "/img-1.png",
-    desc: "A minimalist exploration of form and space.",
-    liveUrl: "#",
-    gitUrl: "#",
+    name: "Nike Landing Page ",
+    img: "/img-4.jpeg",
+    video: "/p1.mp4",
+    desc: "A beautiful and responsive Nike shoes landing page built using React.js and Tailwind CSS. The design emphasizes simplicity, modern UI, and user engagement with clean animations and a smooth experience.",
+    liveUrl: "https://gautamk01.github.io/Nike-_Landing_page/",
+    gitUrl: "https://github.com/gautamk01/Nike-_Landing_page",
   },
   {
-    name: "Bloom24",
-    img: "/img-2.png",
-    desc: "Vibrant colors meet organic patterns.",
-    liveUrl: "#",
-    gitUrl: "#",
+    name: "Intro Animation 1",
+    img: "/img-1.jpeg",
+    video: "/p2.mp4",
+    desc: "A stunning, interactive portfolio website featuring advanced GSAP animations, dynamic text effects, and color-shifting glows. Built with React and Vite, this project showcases modern web development techniques with a focus on performance and visual excellence.",
+    liveUrl: "https://gautamk01.github.io/GSAP-PROJECT-1/",
+    gitUrl: "https://github.com/gautamk01/GSAP-PROJECT-1",
   },
   {
-    name: "Glass Fade",
-    img: "/img-3.png",
-    desc: "Transparency and light in motion.",
-    liveUrl: "#",
-    gitUrl: "#",
+    name: "Intro Animation 2",
+    img: "/img-3.jpeg",
+    video: "/p3.mp4",
+    desc: "A stunning React-based web application showcasing advanced scroll-driven animations using GSAP (GreenSock Animation Platform), featuring interactive Lottie animations and smooth scrolling effects.",
+    liveUrl: "https://gautamk01.github.io/GSAP-PROJECT-3/",
+    gitUrl: "https://github.com/gautamk01/GSAP-PROJECT-3/",
   },
   {
-    name: "Stilllroom",
-    img: "/img-7.png",
-    desc: "Serene compositions for quiet moments.",
-    liveUrl: "#",
-    gitUrl: "#",
+    name: "Scroll Animation",
+    img: "/img-2.jpeg",
+    video: "/p4.mp4",
+    desc: "A stunning React-based web application showcasing advanced scroll-driven animations using GSAP (GreenSock Animation Platform), featuring interactive Lottie animations and smooth scrolling effects.",
+    liveUrl: "https://gautamk01.github.io/GSAP-PROJECT-2/",
+    gitUrl: "https://github.com/gautamk01/GSAP-PROJECT-2/",
   },
-  {
-    name: "Echo 9",
-    img: "/img-4.png",
-    desc: "Repetition creates rhythm and depth.",
-    liveUrl: "#",
-    gitUrl: "#",
-  },
-  {
-    name: "Mono 73",
-    img: "/img-9.png",
-    desc: "Monochromatic beauty in simplicity.",
-    liveUrl: "#",
-    gitUrl: "#",
-  },
-  {
-    name: "Echo 9",
-    img: "/img-4.png",
-    desc: "Repetition creates rhythm and depth.",
-    liveUrl: "#",
-    gitUrl: "#",
-  },
-  {
-    name: "Mono 73",
-    img: "/img-9.png",
-    desc: "Monochromatic beauty in simplicity.",
-    liveUrl: "#",
-    gitUrl: "#",
-  },
+  // {
+  //   name: "Mono 73",
+  //   img: "/img-9.png",
+  //   desc: "Monochromatic beauty in simplicity.",
+  //   liveUrl: "#",
+  //   gitUrl: "#",
+  // },
+  // {
+  //   name: "Echo 9",
+  //   img: "/img-4.png",
+  //   desc: "Repetition creates rhythm and depth.",
+  //   liveUrl: "#",
+  //   gitUrl: "#",
+  // },
+  // {
+  //   name: "Mono 73",
+  //   img: "/img-9.png",
+  //   desc: "Monochromatic beauty in simplicity.",
+  //   liveUrl: "#",
+  //   gitUrl: "#",
+  // },
 ];
 
 // Get unique image URLs
@@ -136,23 +133,48 @@ function createBackgroundImages() {
   const bgContainer = document.querySelector(".spotlight-bg-img");
   const shade = bgContainer.querySelector(".spotlight-shade");
 
-  // Get unique images
-  const uniqueImages = [...new Set(spotlightItems.map((item) => item.img))];
+  // Get unique Media
+  // We use object to track uniqueness by img/url
+  const addedUrls = new Set();
+  let firstVideo = null;
 
-  uniqueImages.forEach((imgUrl, index) => {
-    const img = document.createElement("img");
-    img.src = imgUrl;
-    img.alt = "";
-    img.dataset.imageUrl = imgUrl; // Store URL for easy lookup
+  spotlightItems.forEach((item, index) => {
+    const uniqueKey = item.img;
+    if (addedUrls.has(uniqueKey)) return;
+    addedUrls.add(uniqueKey);
 
-    // First image is active by default
+    let mediaEl;
+    if (item.video) {
+      mediaEl = document.createElement("video");
+      mediaEl.src = item.video;
+      mediaEl.muted = true;
+      mediaEl.loop = true;
+      mediaEl.playsInline = true;
+      // Don't autoplay - we'll control this manually
+    } else {
+      mediaEl = document.createElement("img");
+      mediaEl.src = item.img;
+      mediaEl.alt = "";
+    }
+
+    mediaEl.dataset.mediaUrl = uniqueKey; // Store key for easy lookup
+
+    // First item active by default
     if (index === 0) {
-      img.classList.add("active");
+      mediaEl.classList.add("active");
+      if (item.video) {
+        firstVideo = mediaEl;
+      }
     }
 
     // Insert before the shade element
-    bgContainer.insertBefore(img, shade);
+    bgContainer.insertBefore(mediaEl, shade);
   });
+
+  // Start playing the first video if it exists
+  if (firstVideo) {
+    firstVideo.play().catch((err) => console.log("Autoplay prevented:", err));
+  }
 }
 
 // Initialize site after images are loaded
@@ -319,7 +341,7 @@ ScrollTrigger.create({
         transform: `scale(${animationProgress})`,
       });
 
-      gsap.set(".spotlight-bg-img img", {
+      gsap.set(".spotlight-bg-img img, .spotlight-bg-img video", {
         transform: `scale(${1.5 - animationProgress * 0.5})`,
       });
 
@@ -330,8 +352,10 @@ ScrollTrigger.create({
         "--after-opacity": "0",
       });
     } else if (progress > 0.2 && progress <= 0.25) {
-      gsap.set(".spotlight-bg-img", { transform: "scale(1)" });
-      gsap.set(".spotlight-bg-img img", { transform: "scale(1)" });
+      gsap.set(
+        ".spotlight-bg-img, .spotlight-bg-img img, .spotlight-bg-img video",
+        { transform: "scale(1)" }
+      );
       gsap.set(introTextElement[0], { opacity: 0 });
       gsap.set(introTextElement[1], { opacity: 0 });
 
@@ -343,8 +367,10 @@ ScrollTrigger.create({
       });
     } else if (progress > 0.25) {
       // Run until the end
-      gsap.set(".spotlight-bg-img", { transform: "scale(1)" });
-      gsap.set(".spotlight-bg-img img", { transform: "scale(1)" });
+      gsap.set(
+        ".spotlight-bg-img, .spotlight-bg-img img, .spotlight-bg-img video",
+        { transform: "scale(1)" }
+      );
       gsap.set(introTextElement[0], { opacity: 0 });
       gsap.set(introTextElement[1], { opacity: 0 });
 
@@ -454,14 +480,19 @@ ScrollTrigger.create({
         });
 
         // Switch background image via opacity (instant, no loading)
-        const newImageUrl = spotlightItems[closestIndex].img;
-        const bgImages = document.querySelectorAll(".spotlight-bg-img img");
+        // Switch background image/video via opacity
+        const newUrl = spotlightItems[closestIndex].img;
+        const bgMedia = document.querySelectorAll(
+          ".spotlight-bg-img img, .spotlight-bg-img video"
+        );
 
-        bgImages.forEach((img) => {
-          if (img.dataset.imageUrl === newImageUrl) {
-            img.classList.add("active");
+        bgMedia.forEach((el) => {
+          if (el.dataset.mediaUrl === newUrl) {
+            el.classList.add("active");
+            if (el.tagName === "VIDEO") el.play();
           } else {
-            img.classList.remove("active");
+            el.classList.remove("active");
+            if (el.tagName === "VIDEO") el.pause();
           }
         });
 
