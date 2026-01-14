@@ -77,47 +77,76 @@ const spotlightItems = [
 ];
 
 // Get unique image URLs
-const imageUrls = [...new Set(spotlightItems.map((item) => item.img))];
+// Get unique URLs
+const uniqueImageUrls = [...new Set(spotlightItems.map((item) => item.img))];
+const uniqueVideoUrls = [
+  ...new Set(
+    spotlightItems.filter((item) => item.video).map((item) => item.video)
+  ),
+];
 
 // Store preloaded images in memory to prevent re-fetching
 const imageCache = new Map();
 
 // Preload images and cache them in memory
-function preloadImages(urls) {
+// Preload assets
+function preloadAssets(imgUrls, videoUrls) {
   return new Promise((resolve) => {
     let loadedCount = 0;
-    const totalImages = urls.length;
+    const totalAssets = imgUrls.length + videoUrls.length;
 
-    if (totalImages === 0) {
+    if (totalAssets === 0) {
       resolve();
       return;
     }
 
-    urls.forEach((url) => {
+    function checkProgress() {
+      loadedCount++;
+      updateProgress(loadedCount, totalAssets);
+      if (loadedCount === totalAssets) {
+        resolve();
+      }
+    }
+
+    // Preload Images
+    imgUrls.forEach((url) => {
       const img = new Image();
-
       img.onload = () => {
-        loadedCount++;
-        // Cache the loaded image object
         imageCache.set(url, img);
-        updateProgress(loadedCount, totalImages);
-
-        if (loadedCount === totalImages) {
-          resolve();
-        }
+        checkProgress();
       };
-
       img.onerror = () => {
-        loadedCount++;
         console.warn(`Failed to load image: ${url}`);
-        updateProgress(loadedCount, totalImages);
+        checkProgress();
+      };
+      img.src = url;
+    });
 
-        if (loadedCount === totalImages) {
-          resolve();
-        }
+    // Preload Videos
+    videoUrls.forEach((url) => {
+      const video = document.createElement("video");
+      video.src = url;
+      video.preload = "auto";
+      video.muted = true;
+      video.playsInline = true;
+
+      // 'canplaythrough' or 'loadeddata' usually enough for "ready"
+      video.onloadeddata = () => {
+        checkProgress();
+        // Clear handler to avoid multiple calls
+        video.onloadeddata = null;
+        video.onerror = null;
       };
 
-      img.src = url;
+      video.onerror = () => {
+        console.warn(`Failed to load video: ${url}`);
+        checkProgress();
+        video.onloadeddata = null;
+        video.onerror = null;
+      };
+
+      // Force load trigger
+      video.load();
     });
   });
 }
@@ -177,9 +206,9 @@ function createBackgroundImages() {
   }
 }
 
-// Initialize site after images are loaded
+// Initialize site after assets are loaded
 async function initializeSite() {
-  await preloadImages(imageUrls);
+  await preloadAssets(uniqueImageUrls, uniqueVideoUrls);
 
   // Create pre-rendered background images
   createBackgroundImages();
