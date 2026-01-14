@@ -1,0 +1,483 @@
+@import url("https://fonts.cdnfonts.com/css/pp-neue-montreal");
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "PP Neue Montreal", sans-serif;
+}
+
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+h1 {
+  font-size: 4rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+p {
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+section {
+  position: relative;
+  width: 100vw;
+  height: 100svh;
+  overflow: hidden;
+}
+
+.intro,
+.outro {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #0f0f0f;
+  color: #fff;
+  font-size: clamp(2.25rem, 1.25rem + 4vw, 6rem);
+  line-height: 1.1;
+}
+
+/* Spotlight Section */
+.spotlight::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    transparent 30%,
+    rgba(0, 0, 0, 0.8) 90%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* “Discover” header */
+.spotlight-header p {
+  font-size: clamp(1.5rem, 0.75rem + 3vw, 3.5rem);
+}
+
+/* Project titles that scroll in */
+.spotlight-titles h1 {
+  font-size: clamp(2.2rem, 1.1rem + 4.5vw, 5.5rem);
+  line-height: 1.05;
+}
+
+/* “Beneath” split text */
+.spotlight-intro-text p {
+  font-size: clamp(1.75rem, 0.75rem + 3.5vw, 4rem);
+}
+.spotlight-intro-text-wrapper {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 0.5rem;
+}
+
+.spotlight-intro-text {
+  flex: 1;
+  position: relative;
+  will-change: transform;
+}
+
+.spotlight-intro-text:nth-child(1) {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.spotlight-bg-img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  transform: scale(0);
+  will-change: transform;
+}
+
+.spotlight-bg-img img {
+  transform: scale(1.5);
+  will-change: transform;
+}
+
+.spotlight-titles-container {
+  position: absolute;
+  top: 0;
+  left: 15vw;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  clip-path: polygon(
+    50vh 0px,
+    0px 50%,
+    50svh 100%,
+    100% calc(100% + 100svh),
+    100% -100svh
+  );
+  --before-opacity: 0;
+  --after-opacity: 0;
+}
+
+.spotlight-titles-container::before,
+.spotlight-titles-container::after {
+  content: "";
+  position: absolute;
+  width: 100svh;
+  height: 2.5px;
+  background: #fff;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+.spotlight-titles-container::before {
+  top: 0;
+  left: 0;
+  transform: rotate(-45deg) translate(-7rem);
+  opacity: var(--before-opacity);
+}
+
+.spotlight-titles-container::after {
+  bottom: 0;
+  left: 0;
+  transform: rotate(45deg) translate(-7rem);
+  opacity: var(--after-opacity);
+}
+
+.spotlight-titles {
+  position: relative;
+  left: 15%;
+  width: 75%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+  transform: translateY(100%);
+  z-index: 2;
+  will-change: transform;
+}
+
+.spotlight-titles h1 {
+  color: #fff;
+  opacity: 0.25;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+  position: relative; /* Needed for absolute positioning of the pseudo-element */
+  display: inline-block; /* Keeps the label close to the text */
+  transform-origin: left center; /* Scales from left to right on Desktop */
+}
+
+/* The "Explore" Hint - Global Style */
+.spotlight-titles h1::after {
+  content: "View Project ↗";
+  display: block; /* Force it to a new line */
+  position: absolute;
+  left: 0; /* Align with the start of the text */
+  top: 100%; /* Position right below */
+  margin-top: 0.5rem;
+
+  font-family: "Inter", sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase; /* Make it look like a label */
+
+  color: rgba(255, 255, 255, 0.8);
+  background: transparent;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+
+  opacity: 0; /* Hidden by default */
+  transform: translateY(-10px); /* Preheat animation */
+  pointer-events: none;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  white-space: nowrap;
+}
+
+/* Show it when active */
+.spotlight-titles h1.active::after {
+  opacity: 1;
+  transform: translateY(0); /* Slide into place */
+}
+
+/* Hover state enhancement */
+.spotlight-titles h1:hover {
+  color: #d6d5d5;
+  transition: all 0.4s ease;
+}
+
+/* Mobile specific adjustment for the hint */
+@media (max-width: 1024px) {
+  .spotlight-titles h1::after {
+    content: "Tap to view";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-left: 0;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
+}
+
+.spotlight-images {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  min-width: 300px;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.spotlight-img {
+  position: absolute;
+  width: 200px;
+  height: 150px;
+  will-change: transform;
+}
+
+.spotlight-header {
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  transform: translateY(-50%);
+  transition: opacity 0.3s ease;
+  z-index: 2;
+  opacity: 0;
+  color: #fff;
+}
+
+/* Tablet and smaller (< 1024px) */
+@media (max-width: 1024px) {
+  .intro,
+  .outro {
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .spotlight-titles-container {
+    clip-path: none;
+    left: 0;
+    width: 100%;
+  }
+
+  /* Creative Mobile: Top/Bottom Framing Lines instead of diagonal */
+  .spotlight-titles-container::before,
+  .spotlight-titles-container::after {
+    width: 60%;
+    height: 1px;
+    left: 20%;
+    transform: none;
+    background: linear-gradient(90deg, transparent, #fff, transparent);
+  }
+
+  .spotlight-titles-container::before {
+    top: 35%; /* Frame the visual center */
+  }
+
+  .spotlight-titles-container::after {
+    top: 65%; /* Frame the visual center */
+    bottom: auto;
+  }
+
+  .spotlight-titles {
+    left: 0;
+    width: 100%;
+    align-items: center;
+    text-align: center;
+    padding-bottom: 20vh;
+  }
+
+  /* Mobile Active State Logic (handled via class or specific styles) */
+  .spotlight-titles h1 {
+    font-size: clamp(3rem, 8vw, 5rem);
+    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    opacity: 0.3; /* Default dim */
+    filter: blur(2px); /* Default blur for depth */
+    transform: scale(0.9);
+    transform-origin: center center; /* Back to center for mobile */
+  }
+
+  /* The Active Item (we will toggle opacity/transform in JS, but setup here) */
+  .spotlight-titles h1[style*="opacity: 1"] {
+    filter: blur(0px);
+    transform: scale(1.15); /* Pop effect */
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+  }
+}
+
+/* Mobile (< 768px) */
+@media (max-width: 768px) {
+  .spotlight-intro-text-wrapper {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .spotlight-intro-text:nth-child(1) {
+    justify-content: center;
+  }
+
+  .spotlight-modal {
+    padding: 1.5rem;
+  }
+
+  .spotlight-modal__btns {
+    flex-direction: column;
+    width: 100%;
+    gap: 1rem;
+  }
+
+  .spotlight-modal__btn {
+    width: 100%;
+  }
+
+  .spotlight-modal__img {
+    max-width: 100%;
+    height: auto;
+    max-height: 30vh;
+  }
+}
+
+.spotlight-modal {
+  --pad: clamp(1rem, 4vw, 3rem);
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: grid;
+  place-content: center;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  padding: var(--pad);
+  text-align: center;
+  color: #fff;
+  font-family: inherit;
+}
+.spotlight-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.spotlight-modal__close {
+  position: absolute;
+  top: var(--pad);
+  right: var(--pad);
+  background: none;
+  border: 0;
+  font-size: 2rem;
+  color: #fff;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.spotlight-modal__title {
+  font-size: clamp(2rem, 5vw + 1rem, 4rem);
+  margin: 0 0 0.5em;
+}
+.spotlight-modal__desc {
+  font-size: clamp(0.9rem, 1.5vw + 0.5rem, 1.25rem);
+  max-width: 50ch;
+  margin: 0 0 1.5em;
+}
+.spotlight-modal__btn {
+  padding: 0.75em 2em;
+  background: #fff;
+  color: #000;
+  border: none;
+  font-size: clamp(0.9rem, 1vw + 0.5rem, 1.1rem);
+  cursor: pointer;
+  transition: background 0.25s;
+}
+.spotlight-modal__btn:hover {
+  background: #e5e5e5;
+}
+
+.spotlight-modal__img {
+  width: 100%;
+  max-width: 280px;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: var(--space-md);
+}
+
+.spotlight-modal__btns {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.spotlight-modal__btn.live {
+  background: #fff;
+  color: #000;
+}
+.spotlight-modal__btn.git {
+  background: #333;
+  color: #fff;
+}
+.spotlight-modal__btn:hover {
+  filter: brightness(1.15);
+}
+
+.spotlight-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1; /* sits on top of the image */
+  background: radial-gradient(
+    ellipse 60% 100% at 30% 50%,
+    rgba(0, 0, 0, 0.65) 0%,
+    rgba(0, 0, 0, 0) 70%
+  );
+  pointer-events: none; /* keeps image clicks intact */
+}
+
+/* Vertical "Discover" text for mobile */
+@media (max-width: 950px) {
+  .spotlight-header {
+    display: block; /* Bring it back! */
+    left: auto;
+    right: 1rem;
+    top: 50%;
+    width: auto;
+    writing-mode: vertical-rl; /* Vertical Text */
+    transform: translateY(-50%) rotate(180deg);
+    opacity: 0.6 !important; /* Subtle */
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+    padding-left: 0.5rem;
+  }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .spotlight-titles h1 {
+    padding: 1.5rem 0; /* Huge touch target */
+  }
+
+  .spotlight-modal__close {
+    padding: 1rem;
+  }
+}

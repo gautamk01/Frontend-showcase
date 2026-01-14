@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="./src/style.css" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project section | Scroll animation</title>
+  </head>
+  <body>
+    <!-- intro section -->
+    <section class="intro">
+      <h1>
+        Frontend Project Showcase <br />
+        <span
+          style="
+            color: #888;
+            font-size: 0.6em;
+            display: block;
+            margin-top: 10px;
+          "
+          >by GAUTAM KRISHNA M</span
+        >
+      </h1>
+    </section>
+
+    <!-- spotlightsection -->
+    <section class="spotlight">
+      <div class="spotlight-intro-text-wrapper">
+        <div class="spotlight-intro-text">
+          <p>Project</p>
+        </div>
+        <div class="spotlight-intro-text">
+          <p>is Fun</p>
+        </div>
+      </div>
+
+      <div class="spotlight-bg-img">
+        <img src="img-1.png" alt="" />
+        <div class="spotlight-shade"></div>
+      </div>
+
+      <div class="spotlight-titles-container">
+        <div class="spotlight-titles"></div>
+      </div>
+
+      <div class="spotlight-images"></div>
+
+      <div class="spotlight-header">
+        <p>Discover</p>
+      </div>
+    </section>
+
+    <!-- Spotlight Modal -->
+    <div id="spotlight-modal" class="spotlight-modal">
+      <button class="spotlight-modal__close" aria-label="close">✕</button>
+
+      <img class="spotlight-modal__img" src="" alt="" />
+      <h2 class="spotlight-modal__title"></h2>
+      <p class="spotlight-modal__desc"></p>
+
+      <div class="spotlight-modal__btns">
+        <a
+          class="spotlight-modal__btn live"
+          href="#"
+          target="_blank"
+          rel="noopener"
+        >
+          View Live
+        </a>
+        <a
+          class="spotlight-modal__btn git"
+          href="#"
+          target="_blank"
+          rel="noopener"
+        >
+          GitHub
+        </a>
+      </div>
+    </div>
+    <!-- outro section -->
+    <section class="outro">
+      <h1>Moments in still motion</h1>
+    </section>
+
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>
