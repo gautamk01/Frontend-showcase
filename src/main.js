@@ -4,32 +4,15 @@ import Lenis from "lenis";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const live = {
-  get vh() {
-    return window.innerHeight;
-  },
-  get vw() {
-    return window.innerWidth;
-  },
-  get w75() {
-    return this.vw * 0.75;
-  },
-  get end() {
-    return `+=${this.vh * 10}px`;
-  }, // 1️⃣ scroll distance
-  get arc() {
-    // 2️⃣ bezier points
-    const startX = this.w75 - 220;
-    const cpX = startX + 500; // config.arcRadius
-    const cpY = this.vh / 2;
-    return { startX, cpX, cpY };
-  },
-};
-gsap.set("body", { overflowX: "hidden" });
-window.addEventListener("wheel", (e) => e.deltaX && e.preventDefault(), {
-  passive: false,
-});
+// ========== IMAGE PRELOADER ==========
+const loadingScreen = document.getElementById("loading-screen");
+const loadingBar = document.querySelector(".loading-bar");
+const loadingPercentage = document.querySelector(".loading-percentage");
 
+// Add loading class to body to prevent scrolling
+document.body.classList.add("loading");
+
+// Collect all image URLs
 const config = {
   gap: 0.08,
   speed: 0.4,
@@ -95,6 +78,131 @@ const spotlightItems = [
     gitUrl: "#",
   },
 ];
+
+// Get unique image URLs
+const imageUrls = [...new Set(spotlightItems.map((item) => item.img))];
+
+// Store preloaded images in memory to prevent re-fetching
+const imageCache = new Map();
+
+// Preload images and cache them in memory
+function preloadImages(urls) {
+  return new Promise((resolve) => {
+    let loadedCount = 0;
+    const totalImages = urls.length;
+
+    if (totalImages === 0) {
+      resolve();
+      return;
+    }
+
+    urls.forEach((url) => {
+      const img = new Image();
+
+      img.onload = () => {
+        loadedCount++;
+        // Cache the loaded image object
+        imageCache.set(url, img);
+        updateProgress(loadedCount, totalImages);
+
+        if (loadedCount === totalImages) {
+          resolve();
+        }
+      };
+
+      img.onerror = () => {
+        loadedCount++;
+        console.warn(`Failed to load image: ${url}`);
+        updateProgress(loadedCount, totalImages);
+
+        if (loadedCount === totalImages) {
+          resolve();
+        }
+      };
+
+      img.src = url;
+    });
+  });
+}
+
+function updateProgress(loaded, total) {
+  const progress = (loaded / total) * 100;
+  loadingBar.style.width = `${progress}%`;
+  loadingPercentage.textContent = `${Math.round(progress)}%`;
+}
+
+// Create pre-rendered background images for instant switching
+function createBackgroundImages() {
+  const bgContainer = document.querySelector(".spotlight-bg-img");
+  const shade = bgContainer.querySelector(".spotlight-shade");
+
+  // Get unique images
+  const uniqueImages = [...new Set(spotlightItems.map((item) => item.img))];
+
+  uniqueImages.forEach((imgUrl, index) => {
+    const img = document.createElement("img");
+    img.src = imgUrl;
+    img.alt = "";
+    img.dataset.imageUrl = imgUrl; // Store URL for easy lookup
+
+    // First image is active by default
+    if (index === 0) {
+      img.classList.add("active");
+    }
+
+    // Insert before the shade element
+    bgContainer.insertBefore(img, shade);
+  });
+}
+
+// Initialize site after images are loaded
+async function initializeSite() {
+  await preloadImages(imageUrls);
+
+  // Create pre-rendered background images
+  createBackgroundImages();
+
+  // Wait a brief moment for the 100% to be visible
+  await new Promise((resolve) => setTimeout(resolve, 300));
+
+  // Hide loading screen
+  loadingScreen.classList.add("hidden");
+  document.body.classList.remove("loading");
+
+  // Remove loading screen from DOM after animation completes
+  setTimeout(() => {
+    loadingScreen.remove();
+  }, 600);
+}
+
+// Start preloading
+initializeSite();
+
+const live = {
+  get vh() {
+    return window.innerHeight;
+  },
+  get vw() {
+    return window.innerWidth;
+  },
+  get w75() {
+    return this.vw * 0.75;
+  },
+  get end() {
+    return `+=${this.vh * 10}px`;
+  }, // 1️⃣ scroll distance
+  get arc() {
+    // 2️⃣ bezier points
+    const startX = this.w75 - 220;
+    const cpX = startX + 500; // config.arcRadius
+    const cpY = this.vh / 2;
+    return { startX, cpX, cpY };
+  },
+};
+gsap.set("body", { overflowX: "hidden" });
+window.addEventListener("wheel", (e) => e.deltaX && e.preventDefault(), {
+  passive: false,
+});
 
 const lenis = new Lenis();
 lenis.on("scroll", ScrollTrigger.update);
@@ -345,8 +453,18 @@ ScrollTrigger.create({
           duration: 0.4,
         });
 
-        document.querySelector(".spotlight-bg-img img").src =
-          spotlightItems[closestIndex].img;
+        // Switch background image via opacity (instant, no loading)
+        const newImageUrl = spotlightItems[closestIndex].img;
+        const bgImages = document.querySelectorAll(".spotlight-bg-img img");
+
+        bgImages.forEach((img) => {
+          if (img.dataset.imageUrl === newImageUrl) {
+            img.classList.add("active");
+          } else {
+            img.classList.remove("active");
+          }
+        });
+
         currentActiveIndex = closestIndex;
       }
     }
